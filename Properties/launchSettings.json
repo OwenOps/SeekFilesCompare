@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "testRecursive": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Prog\\SAE_Mobile\\lib"
+    }
+  }
+}
