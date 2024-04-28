@@ -2,7 +2,7 @@
   "profiles": {
     "testRecursive": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Prog\\SAE_Mobile\\lib"
+      "commandLineArgs": "D:\\AProg\\1ere\\TestMerge"
     }
   }
 }

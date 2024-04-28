@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Owen\\OneDrive\\Desktop\\testRecursive\\testRecursive.csproj": {}
+    "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Owen\\OneDrive\\Desktop\\testRecursive\\testRecursive.csproj": {
+    "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Owen\\OneDrive\\Desktop\\testRecursive\\testRecursive.csproj",
+        "projectUniqueName": "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj",
         "projectName": "testRecursive",
-        "projectPath": "C:\\Users\\Owen\\OneDrive\\Desktop\\testRecursive\\testRecursive.csproj",
-        "packagesPath": "C:\\Users\\Owen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Owen\\OneDrive\\Desktop\\testRecursive\\obj\\",
+        "projectPath": "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj",
+        "packagesPath": "C:\\Users\\rebel\\.nuget\\packages\\",
+        "outputPath": "D:\\AProg\\CSharp\\Sha256\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Owen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rebel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
