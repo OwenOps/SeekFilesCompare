@@ -5,13 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace testRecursive
+namespace Sha256.Sha256_Folders
 {
     public class WriteFile
     {
         public abstract class FileWriter
         {
-            private static readonly string FolderPath = @"C:\Users\rebel\OneDrive\Desktop\";
+           /* private static readonly string folderResults = @"results";
+            private static readonly string FolderPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), folderResults));*/
+
+            private static readonly string FolderPath = @"D:\AProg\CSharp\Sha256\results\";
+
 
             protected string FullFilePath;
             protected int SaveCounter;
@@ -67,7 +71,7 @@ namespace testRecursive
 
         public class ErrorFileWriter() : FileWriter(_fileName)
         {
-            private const string _fileName = "Sha256-error.txt";
+            private const string _fileName = "Sha256_error.txt";
 
             protected override void AppendContent(string content)
             {

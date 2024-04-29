@@ -1,0 +1,15 @@
+D:\AProg\CSharp\Sha256\bin\Debug\net8.0\Sha256.exe
+D:\AProg\CSharp\Sha256\bin\Debug\net8.0\Sha256.deps.json
+D:\AProg\CSharp\Sha256\bin\Debug\net8.0\Sha256.runtimeconfig.json
+D:\AProg\CSharp\Sha256\bin\Debug\net8.0\Sha256.dll
+D:\AProg\CSharp\Sha256\bin\Debug\net8.0\Sha256.pdb
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.GeneratedMSBuildEditorConfig.editorconfig
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.AssemblyInfoInputs.cache
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.AssemblyInfo.cs
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.csproj.CoreCompileInputs.cache
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.sourcelink.json
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.dll
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\refint\Sha256.dll
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.pdb
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\Sha256.genruntimeconfig.cache
+D:\AProg\CSharp\Sha256\obj\Debug\net8.0\ref\Sha256.dll

@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj",
-      "projectName": "testRecursive",
-      "projectPath": "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj",
+      "projectUniqueName": "D:\\AProg\\CSharp\\Sha256\\Sha256.csproj",
+      "projectName": "Sha256",
+      "projectPath": "D:\\AProg\\CSharp\\Sha256\\Sha256.csproj",
       "packagesPath": "C:\\Users\\rebel\\.nuget\\packages\\",
       "outputPath": "D:\\AProg\\CSharp\\Sha256\\obj\\",
       "projectStyle": "PackageReference",

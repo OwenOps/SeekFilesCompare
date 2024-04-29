@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bVzDcRpLerFHgo4QhFi4o/IhgqtKopfXPEK5yrN0mUb/xqBB8KHliUje1RoDFmG79DSO/qWEqS9Q/EswhPt2Rw==",
+  "dgSpecHash": "YMQynYLg5FSZYppB0TW/s+jHiondUIO/EoK5OkkuL6aj25kGuuqY0CbOtSXVkwYnOpsbP+ac2MWchavllLsMWw==",
   "success": true,
-  "projectFilePath": "D:\\AProg\\CSharp\\Sha256\\testRecursive.csproj",
+  "projectFilePath": "D:\\AProg\\CSharp\\Sha256\\Sha256.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
