@@ -1,3 +1,4 @@
 .vs/
 environment/environment.cs
 results/*
+Properties/

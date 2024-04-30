@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "testRecursive": {
-      "commandName": "Project",
-      "commandLineArgs": "D:\\AProg\\1ere\\SAE_Graphe\r\nD:\\AProg\\1ere\\SAE_Graphe"
-    }
-  }
-}
