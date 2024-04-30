@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using File = System.IO.File;
 
 namespace Sha256.Sha256_Folders
@@ -41,13 +42,11 @@ namespace Sha256.Sha256_Folders
                     HashFile(filePath);
                 }
             }
-            catch (UnauthorizedAccessException)
+            catch (Exception ex)
             {
-                errorLine.AddContent($"Access denied for the file : {directory}");
-            }
-            catch (DirectoryNotFoundException)
-            {
-                errorLine.AddContent($"File not found : {directory}");
+                var error = ex.InnerException?.Message;
+                Console.Error.WriteLine(error);
+                errorLine.AddContent($"An error occurred : {error}");
             }
         }
 
@@ -66,7 +65,7 @@ namespace Sha256.Sha256_Folders
                 {
                     byte[] hashValue = mySha256.ComputeHash(fileStream);
                     fileWriter.AddContent($"{Path.GetFileName(filePath)}: ");
-                    PrintByteArray(hashValue);
+                    PrintByteArray(hashValue, filePath);
                 }
             }
             catch (IOException e)
@@ -79,13 +78,15 @@ namespace Sha256.Sha256_Folders
             }
         }
 
-        public static void PrintByteArray(byte[] array)
+        public static void PrintByteArray(byte[] array, string filePath)
         {
-            for (int i = 0; i < array.Length; i++)
+            StringBuilder sb = new();
+            foreach (var t in array)
             {
-                fileWriter.AddContent($"{array[i]:X2}");
+                sb.Append($"{t:X2}");
             }
-            fileWriter.AddContent("\n");
+
+            fileWriter.AddContent($"{Path.GetFileName(filePath)}: {sb}\n");
         }
     }
 }

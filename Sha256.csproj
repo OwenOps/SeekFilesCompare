@@ -5,10 +5,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <StartupObject>Sha256.Sha256_Folders_Compare.HashFiles</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="results\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronXL.Excel" Version="2024.4.4" />
   </ItemGroup>
 
 </Project>

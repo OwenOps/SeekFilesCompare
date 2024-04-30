@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sha256.environment;
 
 namespace Sha256.Sha256_Folders
 {
@@ -11,11 +12,8 @@ namespace Sha256.Sha256_Folders
     {
         public abstract class FileWriter
         {
-           /* private static readonly string folderResults = @"results";
-            private static readonly string FolderPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), folderResults));*/
-
-            private static readonly string FolderPath = @"D:\AProg\CSharp\Sha256\results\";
-
+            // Your folder with the results
+            private static readonly string FolderPath = Settings.PathResults;
 
             protected string FullFilePath;
             protected int SaveCounter;
