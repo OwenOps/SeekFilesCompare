@@ -5,7 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <StartupObject>Sha256.Sha256_Folders_Compare.HashFiles</StartupObject>
+    <StartupObject>Sha256.Sha256_Folders_Compare_multiThreads.HashFiles</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

@@ -60,12 +60,14 @@ public class HashFiles
     public static void FileCompare(string srcFile, string dstFile)
     {
         ExcelHelper.ExcelCreator excelHelper = new();
-        var dir1 = Directory.EnumerateFiles(srcFile, "*", SearchOption.AllDirectories);
-
         try
         {
+            var dir1 = Directory.EnumerateFiles(srcFile, "*", SearchOption.AllDirectories);
+
             Parallel.ForEach(dir1, (file) =>
             {
+                Console.WriteLine("{0}, Thread Id= {1}", file, Thread.CurrentThread.ManagedThreadId);
+
                 try
                 {
                     string relativePathDest = Path.GetRelativePath(srcFile, file);
@@ -98,7 +100,12 @@ public class HashFiles
                 }
                 catch (UnauthorizedAccessException e)
                 {
-                    LogFileError(file, e.Message, excelHelper);
+                    Console.WriteLine($"Access to file {file} was denied: {e.Message}");
+                    //LogFileError(file, e.Message, excelHelper);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred while processing file {file}: {ex.Message}");
                 }
             });
         }
