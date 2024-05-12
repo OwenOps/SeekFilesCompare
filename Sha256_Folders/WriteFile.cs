@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Sha256.environment;
 
-namespace Sha256.Sha256_Folders
+namespace Sha256.oneThread
 {
     public class WriteFile
     {
         public abstract class FileWriter
         {
             // Your folder with the results
-            private static readonly string FolderPath = Settings.PathResults;
+            private static readonly string FolderPath = Settings.PathResult;
 
             protected string FullFilePath;
             protected int SaveCounter;
             protected StringBuilder ContentBuilder;
+            protected readonly object fileWriterLock = new();
 
             protected FileWriter(string fileName)
             {
@@ -46,12 +42,15 @@ namespace Sha256.Sha256_Folders
 
             private void SaveIfNeeded()
             {
-                SaveCounter++;
-                if (SaveCounter <= 100) return;
+                lock (fileWriterLock)
+                {
+                    SaveCounter++;
+                    if (SaveCounter <= 100) return;
 
-                SaveCounter = 0;
-                SaveToFile();
-                ContentBuilder.Clear();
+                    SaveCounter = 0;
+                    SaveToFile();
+                    ContentBuilder.Clear();
+                }
             }
 
             protected abstract void AppendContent(string content);
@@ -63,7 +62,10 @@ namespace Sha256.Sha256_Folders
 
             protected override void AppendContent(string content)
             {
-                ContentBuilder.Append(content);
+                lock (fileWriterLock)
+                {
+                    ContentBuilder.Append(content);
+                }
             }
         }
 
@@ -73,7 +75,10 @@ namespace Sha256.Sha256_Folders
 
             protected override void AppendContent(string content)
             {
-                ContentBuilder.AppendLine(content);
+                lock (fileWriterLock)
+                {
+                    ContentBuilder.AppendLine(content);
+                }
             }
         }
     }

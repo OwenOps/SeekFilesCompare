@@ -1,6 +1,7 @@
 ﻿
 using System.Text;
 using System.Threading.Tasks;
+using Sha256.environment;
 
 namespace Sha256.Sha256_Folders_Compare_multiThreads
 {
@@ -8,7 +9,7 @@ namespace Sha256.Sha256_Folders_Compare_multiThreads
     {
         public abstract class FileWriter
         {
-            private static readonly string FolderPath = @"C:\Users\S7U04215\Desktop\Sha256\";
+            private static readonly string FolderPath = Settings.PathResult;
 
             protected string FullFilePath;
             protected int SaveCounter;

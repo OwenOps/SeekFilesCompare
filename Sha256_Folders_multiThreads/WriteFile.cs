@@ -8,7 +8,7 @@ namespace Sha256.Sha256_Folders_multiThreads
         public abstract class FileWriter
         {
             // Your folder with the results
-            private static readonly string FolderPath = Settings.PathResults;
+            private static readonly string FolderPath = Settings.PathResult;
 
             protected string FullFilePath;
             protected int SaveCounter;
