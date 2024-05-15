@@ -1,5 +1,6 @@
 ﻿using IronXL;
 using IronXL.Styles;
+using Sha256.environment;
 
 namespace Sha256.oneThread
 {
@@ -8,12 +9,11 @@ namespace Sha256.oneThread
         private WorkBook _wb;
         private WorkSheet _workSheet;
 
-        private const string FileName = "results";
         private static readonly string[] Columns = ["A", "B", "C", "D"];
 
         private int _cptLine = 2;
         private int _cptContent = 0;
-        private const int LimitContentSave = 50;
+        private const int MAX_CONTENT_AUTO_SAVE = 100;
 
         public void WriteContent(List<string> content)
         {
@@ -35,7 +35,7 @@ namespace Sha256.oneThread
         {
             try
             {
-                _wb.SaveAs($"{FileName}.xlsx");
+                _wb.SaveAs(Settings.PathResult);
             }
             catch (Exception ex) { Console.Error.WriteLine(ex.ToString()); }
         }
@@ -43,46 +43,52 @@ namespace Sha256.oneThread
         public void AutoSave()
         {
 
-            if (_cptContent < LimitContentSave)
+            if (_cptContent < MAX_CONTENT_AUTO_SAVE)
             {
                 return;
             }
 
             SaveExcel();
 
-            _wb = WorkBook.Load($"{FileName}.xlsx");
+            _wb = WorkBook.Load(Settings.PathResult);
             _workSheet = _wb.WorkSheets[0];
             _cptContent = 0;
         }
 
         public class ExcelCreator : ExcelHelper
         {
+            private const string WHITE = "#ffffff";
+            private const string BLUE = "#0070c0";
+            private const string ORANGE = "#fe9d0e";
+            private const string GREEN = "#548235";
+            private const string RED = "#c00000";
+
             public ExcelCreator()
             {
                 _wb = WorkBook.Create(ExcelFileFormat.XLSX);
-                _workSheet = _wb.CreateWorkSheet(FileName);
+                _workSheet = _wb.CreateWorkSheet("results");
 
                 _workSheet["A1"].Value = "Path";
-                _workSheet["A1"].Style.BackgroundColor = "#0070c0";
-                _workSheet["A1"].Style.Font.Color = "#ffffff";
+                _workSheet["A1"].Style.BackgroundColor = BLUE;
+                _workSheet["A1"].Style.Font.Color = WHITE;
                 _workSheet["A1"].Style.Font.Bold = true;
                 _workSheet["A1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
 
                 _workSheet["B1"].Value = "HashKey";
-                _workSheet["B1"].Style.BackgroundColor = "#fe9d0e";
-                _workSheet["B1"].Style.Font.Color = "#ffffff";
+                _workSheet["B1"].Style.BackgroundColor = ORANGE;
+                _workSheet["B1"].Style.Font.Color = WHITE;
                 _workSheet["B1"].Style.Font.Bold = true;
                 _workSheet["B1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
 
                 _workSheet["C1"].Value = "FileSize";
-                _workSheet["C1"].Style.BackgroundColor = "#548235";
-                _workSheet["C1"].Style.Font.Color = "#ffffff";
+                _workSheet["C1"].Style.BackgroundColor = GREEN;
+                _workSheet["C1"].Style.Font.Color = WHITE;
                 _workSheet["C1"].Style.Font.Bold = true;
                 _workSheet["C1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
 
                 _workSheet["D1"].Value = "Error";
-                _workSheet["D1"].Style.BackgroundColor = "#c00000";
-                _workSheet["D1"].Style.Font.Color = "#ffffff";
+                _workSheet["D1"].Style.BackgroundColor = RED;
+                _workSheet["D1"].Style.Font.Color = RED;
                 _workSheet["D1"].Style.Font.Bold = true;
                 _workSheet["D1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
             }

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Sha256.environment;
 
-namespace Sha256.Sha256_Folders_multiThreads
+namespace Sha256.writeFile.multiThreads
 {
     public class WriteFile
     {

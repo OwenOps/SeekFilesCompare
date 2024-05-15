@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Sha256.environment;
 
-namespace Sha256.oneThread
+namespace Sha256.writeFile.oneThread
 {
     public class WriteFile
     {
@@ -13,7 +13,6 @@ namespace Sha256.oneThread
             protected string FullFilePath;
             protected int SaveCounter;
             protected StringBuilder ContentBuilder;
-            protected readonly object fileWriterLock = new();
 
             protected FileWriter(string fileName)
             {
@@ -42,15 +41,12 @@ namespace Sha256.oneThread
 
             private void SaveIfNeeded()
             {
-                lock (fileWriterLock)
-                {
-                    SaveCounter++;
-                    if (SaveCounter <= 100) return;
+                SaveCounter++;
+                if (SaveCounter <= 100) return;
 
-                    SaveCounter = 0;
-                    SaveToFile();
-                    ContentBuilder.Clear();
-                }
+                SaveCounter = 0;
+                SaveToFile();
+                ContentBuilder.Clear();
             }
 
             protected abstract void AppendContent(string content);
@@ -62,10 +58,7 @@ namespace Sha256.oneThread
 
             protected override void AppendContent(string content)
             {
-                lock (fileWriterLock)
-                {
-                    ContentBuilder.Append(content);
-                }
+                ContentBuilder.Append(content);
             }
         }
 
@@ -75,10 +68,7 @@ namespace Sha256.oneThread
 
             protected override void AppendContent(string content)
             {
-                lock (fileWriterLock)
-                {
-                    ContentBuilder.AppendLine(content);
-                }
+                ContentBuilder.AppendLine(content);
             }
         }
     }
