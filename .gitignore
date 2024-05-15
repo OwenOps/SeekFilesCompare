@@ -2,3 +2,5 @@
 environment/environment.cs
 results/*
 Properties/
+obj/
+bin/
