@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Sha256.environment;
+using SeekFilesCompare.environment;
 
 namespace Sha256.writeFile.multiThreads
 {

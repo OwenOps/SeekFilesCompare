@@ -1,13 +1,13 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using File = System.IO.File;
+﻿using SeekFilesCompare.mail;
+using SeekFilesCompare.timer;
 
-namespace Sha256.oneThread
+namespace SeekFilesCompare.multiThreads
 {
-    public class HashFiles
+    public class SeekFiles
     {
         private static ExcelHelper.ExcelCreator excelHelper = new();
-        private static string _rootFileSrc = "";
+        private const int MAX_THREADS = 25;
+        public static string RootFileSrc = "";
 
         public static void Main(string[] args)
         {
@@ -17,64 +17,46 @@ namespace Sha256.oneThread
                 return;
             }
 
-            _rootFileSrc = args[0];
+            RootFileSrc = args[0];
             string dstDirectory = args[1];
 
-            if (Directory.Exists(_rootFileSrc) && Directory.Exists(dstDirectory))
+            TimerSeek.Start();
+
+            if (Directory.Exists(RootFileSrc) && Directory.Exists(dstDirectory))
             {
-                Console.WriteLine($"Source : {_rootFileSrc}");
+                Console.WriteLine($"Source : {RootFileSrc}");
                 Console.WriteLine($"Destination : {dstDirectory}");
 
-                SeekFiles(_rootFileSrc, dstDirectory);
+                Seek(RootFileSrc, dstDirectory);
                 excelHelper.SaveExcel();
             }
             else
             {
                 Console.Error.WriteLine("The directory specified could not be found.");
             }
+
+            TimerSeek.Stop();
+
+            Console.WriteLine("\n----------The Program is finished----------");
+            //SendMail.SendAMail();
         }
 
-        private static string HashFile(string filePath)
-        {
-            try
-            {
-                using SHA256 mySha256 = SHA256.Create();
-                using FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read);
-                byte[] hashValue = mySha256.ComputeHash(fileStream);
-                return PrintByteArray(hashValue);
-            }
-            catch (IOException e)
-            {
-                Console.Error.WriteLine($"I/O exception : {e.Message}");
-            }
-            return null;
-        }
-
-        public static string PrintByteArray(byte[] array)
-        {
-            StringBuilder sb = new();
-            foreach (var t in array)
-            {
-                sb.Append($"{t:X2}");
-            }
-            return sb.ToString();
-        }
-
-        private static bool SeekFiles(string rootSrc, string rootDst)
+        private static bool Seek(string rootSrc, string rootDst)
         {
             try
             {
                 foreach (var file in Directory.GetFiles(rootSrc))
                 {
-                    var destinationFilePath = GetDestinationFilePath(_rootFileSrc, rootDst, file);
+                    var destinationFilePath = GetDestinationFilePath(RootFileSrc, rootDst, file);
                     FileCompare(destinationFilePath, file);
                 }
 
-                foreach (var folder in Directory.GetDirectories(rootSrc))
+                string[] folders = Directory.GetDirectories(rootSrc);
+                Parallel.ForEach(folders, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, (folder) =>
                 {
-                    SeekFiles(folder, rootDst);
+                    Seek(folder, rootDst);
+                });
 
-                }
                 return true;
             }
             catch (UnauthorizedAccessException e)
@@ -89,24 +71,19 @@ namespace Sha256.oneThread
             }
         }
 
-        private static string GetDestinationFilePath(string rootSrc, string rootDst, string file)
-        {
-            string relativePathDest = Path.GetRelativePath(rootSrc, file);
-            return Path.Combine(@"\\?\", rootDst, relativePathDest);
-        }
-
         public static void FileCompare(string destinationFilePath, string file)
         {
             try
             {
+                Console.WriteLine(file);
                 if (!File.Exists(destinationFilePath))
                 {
                     LogFileError(destinationFilePath, "File not found", excelHelper: excelHelper);
                     return;
                 }
 
-                string hashSrc = HashFile(file);
-                string hashDest = HashFile(destinationFilePath);
+                string hashSrc = HashFiles.HashFile(file);
+                string hashDest = HashFiles.HashFile(destinationFilePath);
 
                 string fileSizeSrc = new FileInfo(file).Length.ToString();
                 string fileSizeDst = new FileInfo(destinationFilePath).Length.ToString();
@@ -132,6 +109,12 @@ namespace Sha256.oneThread
             {
                 Console.WriteLine($"An error occurred while processing file {file}: {e.Message}");
             }
+        }
+
+        private static string GetDestinationFilePath(string rootSrc, string rootDst, string file)
+        {
+            string relativePathDest = Path.GetRelativePath(rootSrc, file);
+            return Path.Combine(rootDst, relativePathDest);
         }
 
         private static void LogFileError(string destinationFilePath, string errorType, ExcelHelper excelHelper, string? hashFile = null, string? fileSize = null)

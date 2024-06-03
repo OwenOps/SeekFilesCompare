@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using Sha256.environment;
+using SeekFilesCompare.environment;
 
-namespace Sha256.writeFile.oneThread
+namespace SeekFilesCompare.writeFile
 {
     public class WriteFile
     {

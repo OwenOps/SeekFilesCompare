@@ -1,15 +1,14 @@
-﻿using IronXL;
-using IronXL.Styles;
-using Sha256.environment;
+﻿using ClosedXML.Excel;
+using SeekFilesCompare.environment;
 
-namespace Sha256.multiThreads
+namespace SeekFilesCompare.multiThreads
 {
     public abstract class ExcelHelper
     {
-        private WorkBook _wb;
-        private WorkSheet _workSheet;
+        private XLWorkbook _wb;
+        private IXLWorksheet _workSheet;
 
-        private static readonly string[] Columns = ["A", "B", "C", "D"];
+        private static readonly string[] Columns = { "A", "B", "C", "D" };
 
         private int _cptLine = 2;
         private int _cptContent = 0;
@@ -25,10 +24,10 @@ namespace Sha256.multiThreads
 
             lock (_excelLock)
             {
-                _workSheet[Columns[0] + _cptLine].Value = content.ElementAt(0);
-                _workSheet[Columns[1] + _cptLine].Value = content.ElementAt(1);
-                _workSheet[Columns[2] + _cptLine].Value = content.ElementAt(2);
-                _workSheet[Columns[3] + _cptLine].Value = content.ElementAt(3);
+                _workSheet.Cell(Columns[0] + _cptLine).Value = content.ElementAt(0);
+                _workSheet.Cell(Columns[1] + _cptLine).Value = content.ElementAt(1);
+                _workSheet.Cell(Columns[2] + _cptLine).Value = content.ElementAt(2);
+                _workSheet.Cell(Columns[3] + _cptLine).Value = content.ElementAt(3);
                 _cptLine++;
                 _cptContent++;
             }
@@ -42,7 +41,10 @@ namespace Sha256.multiThreads
                 _wb.SaveAs(Settings.PathResult);
 
             }
-            catch (Exception ex) { Console.Error.WriteLine(ex.ToString()); }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.ToString());
+            }
         }
 
         public void AutoSave()
@@ -56,8 +58,8 @@ namespace Sha256.multiThreads
 
                 SaveExcel();
 
-                _wb = WorkBook.Load(Settings.PathResult);
-                _workSheet = _wb.WorkSheets[0];
+                _wb = new XLWorkbook(Settings.PathResult);
+                _workSheet = _wb.Worksheet(1);
                 _cptContent = 0;
             }
         }
@@ -72,32 +74,33 @@ namespace Sha256.multiThreads
 
             public ExcelCreator()
             {
-                _wb = WorkBook.Create(ExcelFileFormat.XLSX);
-                _workSheet = _wb.CreateWorkSheet("results");
+                _wb = new XLWorkbook();
+                _workSheet = _wb.AddWorksheet("results");
 
-                _workSheet["A1"].Value = "Path";
-                _workSheet["A1"].Style.BackgroundColor = BLUE;
-                _workSheet["A1"].Style.Font.Color = WHITE;
-                _workSheet["A1"].Style.Font.Bold = true;
-                _workSheet["A1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
+                var headerRow = _workSheet.Row(1);
+                headerRow.Cell(1).Value = "Path";
+                headerRow.Cell(1).Style.Fill.BackgroundColor = XLColor.FromHtml(BLUE);
+                headerRow.Cell(1).Style.Font.FontColor = XLColor.FromHtml(WHITE);
+                headerRow.Cell(1).Style.Font.Bold = true;
+                headerRow.Cell(1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                _workSheet["B1"].Value = "HashKey";
-                _workSheet["B1"].Style.BackgroundColor = ORANGE;
-                _workSheet["B1"].Style.Font.Color = WHITE;
-                _workSheet["B1"].Style.Font.Bold = true;
-                _workSheet["B1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
+                headerRow.Cell(2).Value = "HashKey";
+                headerRow.Cell(2).Style.Fill.BackgroundColor = XLColor.FromHtml(ORANGE);
+                headerRow.Cell(2).Style.Font.FontColor = XLColor.FromHtml(WHITE);
+                headerRow.Cell(2).Style.Font.Bold = true;
+                headerRow.Cell(2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                _workSheet["C1"].Value = "FileSize";
-                _workSheet["C1"].Style.BackgroundColor = GREEN;
-                _workSheet["C1"].Style.Font.Color = WHITE;
-                _workSheet["C1"].Style.Font.Bold = true;
-                _workSheet["C1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
+                headerRow.Cell(3).Value = "FileSize";
+                headerRow.Cell(3).Style.Fill.BackgroundColor = XLColor.FromHtml(GREEN);
+                headerRow.Cell(3).Style.Font.FontColor = XLColor.FromHtml(WHITE);
+                headerRow.Cell(3).Style.Font.Bold = true;
+                headerRow.Cell(3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                _workSheet["D1"].Value = "Error";
-                _workSheet["D1"].Style.BackgroundColor = RED;
-                _workSheet["D1"].Style.Font.Color = RED;
-                _workSheet["D1"].Style.Font.Bold = true;
-                _workSheet["D1"].Style.HorizontalAlignment = HorizontalAlignment.Center;
+                headerRow.Cell(4).Value = "Error";
+                headerRow.Cell(4).Style.Fill.BackgroundColor = XLColor.FromHtml(RED);
+                headerRow.Cell(4).Style.Font.FontColor = XLColor.FromHtml(WHITE);
+                headerRow.Cell(4).Style.Font.Bold = true;
+                headerRow.Cell(4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
         }
     }
