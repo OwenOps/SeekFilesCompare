@@ -5,8 +5,8 @@ namespace SeekFilesCompare.multiThreads
 {
     public class SeekFiles
     {
-        private static ExcelHelper.ExcelCreator excelHelper = new();
-        private static readonly int MAX_THREADS = Environment.ProcessorCount * 2;
+        private static ExcelHelper.ExcelCreator _excelHelper = new();
+        private static readonly int MaxThreads = Environment.ProcessorCount * 2;
         public static string RootFileSrc = "";
 
         public static void Main(string[] args)
@@ -30,7 +30,7 @@ namespace SeekFilesCompare.multiThreads
                 Console.WriteLine($"Destination : {dstDirectory}");
 
                 goodEnding = Seek(RootFileSrc, dstDirectory);
-                excelHelper.SaveExcel();
+                _excelHelper.SaveExcel();
             }
             else
             {
@@ -62,7 +62,7 @@ namespace SeekFilesCompare.multiThreads
                 }
 
                 string[] folders = Directory.GetDirectories(rootSrc);
-                Parallel.ForEach(folders, new ParallelOptions { MaxDegreeOfParallelism = MAX_THREADS }, (folder) =>
+                Parallel.ForEach(folders, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads }, (folder) =>
                 {
                     Seek(folder, rootDst);
                 });
@@ -71,12 +71,12 @@ namespace SeekFilesCompare.multiThreads
             }
             catch (UnauthorizedAccessException e)
             {
-                LogFileError(rootSrc, e.Message, excelHelper);
+                LogFileError(rootSrc, e.Message, _excelHelper);
                 return false;
             }
             catch (Exception e)
             {
-                LogFileError(rootSrc, e.Message, excelHelper);
+                LogFileError(rootSrc, e.Message, _excelHelper);
                 return false;
             }
         }
@@ -88,7 +88,7 @@ namespace SeekFilesCompare.multiThreads
                 Console.WriteLine(file);
                 if (!File.Exists(destinationFilePath))
                 {
-                    LogFileError(destinationFilePath, "File not found", excelHelper: excelHelper);
+                    LogFileError(destinationFilePath, "File not found", excelHelper: _excelHelper);
                     return;
                 }
 
@@ -101,25 +101,25 @@ namespace SeekFilesCompare.multiThreads
 
                 if (hashSrc != hashDest)
                 {
-                    LogFileError(destinationFilePath, "Not the same Hash", excelHelper, hashDest, formatByte);
+                    LogFileError(destinationFilePath, "Not the same Hash", _excelHelper, hashDest, formatByte);
                     return;
                 }
 
                 if (fileSizeSrc.Length != fileSizeDst.Length)
                 {
-                    LogFileError(destinationFilePath, "Not the same content", excelHelper, hashDest, formatByte);
+                    LogFileError(destinationFilePath, "Not the same content", _excelHelper, hashDest, formatByte);
                     return;
                 }
 
                 if (new FileInfo(file).LastWriteTimeUtc != new FileInfo(destinationFilePath).LastWriteTimeUtc)
                 {
-                    LogFileError(destinationFilePath, "Not the same write time", excelHelper, hashDest, formatByte);
+                    LogFileError(destinationFilePath, "Not the same write time", _excelHelper, hashDest, formatByte);
                     return;
                 }
 
                 if (new FileInfo(file).CreationTimeUtc != new FileInfo(destinationFilePath).CreationTimeUtc)
                 {
-                    LogFileError(destinationFilePath, "Not the same creation time", excelHelper, hashDest, formatByte);
+                    LogFileError(destinationFilePath, "Not the same creation time", _excelHelper, hashDest, formatByte);
                 }
             }
             catch (UnauthorizedAccessException e)
