@@ -19,7 +19,7 @@
         public static string GetElapsedTime()
         {
             TimeSpan elapsed = stopwatch.Elapsed;
-            return $"{elapsed.Hours:00}:{elapsed.Minutes:00}";
+            return $"{elapsed.Hours:00}:{elapsed.Minutes:00}:{elapsed.Seconds:00}.{elapsed.Milliseconds:000}";
         }
     }
 }

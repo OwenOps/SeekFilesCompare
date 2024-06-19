@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using SeekFilesCompare.environment;
 
 namespace SeekFilesCompare.multiThreads
 {
@@ -13,6 +12,7 @@ namespace SeekFilesCompare.multiThreads
         private int _cptLine = 2;
         private int _cptContent = 0;
         private const int MAX_CONTENT_AUTO_SAVE = 100;
+        private static string file_name_result = "";
         private readonly object _excelLock = new();
 
         public void WriteContent(List<string> content)
@@ -38,13 +38,32 @@ namespace SeekFilesCompare.multiThreads
         {
             try
             {
-                _wb.SaveAs(Settings.PathResult);
-
+                _wb.SaveAs(file_name_result);
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.ToString());
             }
+        }
+
+        public static void SetNameDirectory(string rootFileSrc)
+        {
+            string[] directories = rootFileSrc.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+            if (directories.Length >= 2)
+            {
+                file_name_result = $"{directories[directories.Length - 2]}_{directories[directories.Length - 1]}";
+            }
+            else if (directories.Length == 1)
+            {
+                file_name_result = directories[0];
+            }
+            else
+            {
+                file_name_result = "Unknown";
+            }
+
+            file_name_result += "_result.xlsx";
         }
 
         public void AutoSave()
@@ -58,7 +77,7 @@ namespace SeekFilesCompare.multiThreads
 
                 SaveExcel();
 
-                _wb = new XLWorkbook(Settings.PathResult);
+                _wb = new XLWorkbook(file_name_result);
                 _workSheet = _wb.Worksheet(1);
                 _cptContent = 0;
             }

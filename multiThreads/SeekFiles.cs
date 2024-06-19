@@ -6,7 +6,7 @@ namespace SeekFilesCompare.multiThreads
     public class SeekFiles
     {
         private static ExcelHelper.ExcelCreator excelHelper = new();
-        private const int MAX_THREADS = 25;
+        private static readonly int MAX_THREADS = Environment.ProcessorCount * 2;
         public static string RootFileSrc = "";
 
         public static void Main(string[] args)
@@ -19,7 +19,9 @@ namespace SeekFilesCompare.multiThreads
 
             RootFileSrc = args[0];
             string dstDirectory = args[1];
+            bool goodEnding = true;
 
+            ExcelHelper.SetNameDirectory(RootFileSrc);
             TimerSeek.Start();
 
             if (Directory.Exists(RootFileSrc) && Directory.Exists(dstDirectory))
@@ -27,7 +29,7 @@ namespace SeekFilesCompare.multiThreads
                 Console.WriteLine($"Source : {RootFileSrc}");
                 Console.WriteLine($"Destination : {dstDirectory}");
 
-                Seek(RootFileSrc, dstDirectory);
+                goodEnding = Seek(RootFileSrc, dstDirectory);
                 excelHelper.SaveExcel();
             }
             else
@@ -37,8 +39,16 @@ namespace SeekFilesCompare.multiThreads
 
             TimerSeek.Stop();
 
-            Console.WriteLine("\n----------The Program is finished----------");
-            //SendMail.SendAMail();
+            if (goodEnding)
+            {
+                Console.WriteLine("\n----------The program ended well----------");
+            }
+            else
+            {
+                Console.WriteLine("\n----------The program did not end well----------");
+            }
+
+            SendMail.SendAMail();
         }
 
         private static bool Seek(string rootSrc, string rootDst)
@@ -100,6 +110,17 @@ namespace SeekFilesCompare.multiThreads
                     LogFileError(destinationFilePath, "Not the same content", excelHelper, hashDest, formatByte);
                     return;
                 }
+
+                if (new FileInfo(file).LastWriteTimeUtc != new FileInfo(destinationFilePath).LastWriteTimeUtc)
+                {
+                    LogFileError(destinationFilePath, "Not the same write time", excelHelper, hashDest, formatByte);
+                    return;
+                }
+
+                if (new FileInfo(file).CreationTimeUtc != new FileInfo(destinationFilePath).CreationTimeUtc)
+                {
+                    LogFileError(destinationFilePath, "Not the same creation time", excelHelper, hashDest, formatByte);
+                }
             }
             catch (UnauthorizedAccessException e)
             {
@@ -114,7 +135,7 @@ namespace SeekFilesCompare.multiThreads
         private static string GetDestinationFilePath(string rootSrc, string rootDst, string file)
         {
             string relativePathDest = Path.GetRelativePath(rootSrc, file);
-            return Path.Combine(rootDst, relativePathDest);
+            return Path.Combine($@"\\{{Environment.MachineName}}",rootDst, relativePathDest);
         }
 
         private static void LogFileError(string destinationFilePath, string errorType, ExcelHelper excelHelper, string? hashFile = null, string? fileSize = null)

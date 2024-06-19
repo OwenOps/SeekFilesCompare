@@ -10,7 +10,7 @@ namespace SeekFilesCompare.multiThreads
             try
             {
                 using (SHA256 mySha256 = SHA256.Create())
-                using (var stream = new BufferedStream(File.OpenRead(filePath), 1000000))
+                using (var stream = new BufferedStream(File.OpenRead(filePath), 1_000_000))
                 {
                     byte[] hashValue = mySha256.ComputeHash(stream);
                     return PrintByteArray(hashValue);
