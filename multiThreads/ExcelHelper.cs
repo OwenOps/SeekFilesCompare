@@ -51,6 +51,10 @@ namespace SeekFilesCompare.multiThreads
             {
                 Console.Error.WriteLine(ex.ToString());
             }
+            finally
+            {
+                _wb?.Dispose();
+            }
         }
 
         private string GetExecutionPath()

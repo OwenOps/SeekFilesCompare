@@ -5,14 +5,14 @@ namespace SeekFilesCompare.multiThreads
 {
     public class HashFiles
     {
-        public static string HashFile(string filePath)
+        public static async Task<string> HashFile(string filePath)
         {
             try
             {
                 using (SHA256 mySha256 = SHA256.Create())
                 using (var stream = new BufferedStream(File.OpenRead(filePath), 1_000_000))
                 {
-                    byte[] hashValue = mySha256.ComputeHash(stream);
+                    byte[] hashValue = await mySha256.ComputeHashAsync(stream);
                     return PrintByteArray(hashValue);
                 }
             }
@@ -20,7 +20,8 @@ namespace SeekFilesCompare.multiThreads
             {
                 Console.Error.WriteLine($"I/O exception : {e.Message}");
             }
-            return null;
+
+            return "";
         }
 
         public static string PrintByteArray(byte[] array)

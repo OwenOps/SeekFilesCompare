@@ -6,10 +6,14 @@ namespace SeekFilesCompare.multiThreads
     public class SeekFiles
     {
         private static ExcelHelper.ExcelCreator _excelHelper = new();
-        private static readonly int MaxThreads = Environment.ProcessorCount * 2;
-        public static string RootFileSrc = "";
+        private static readonly int MaxThreads = 15;
+        private static SemaphoreSlim _semaphore = new SemaphoreSlim(MaxThreads, MaxThreads);
 
-        public static void Main(string[] args)
+        public static string RootFileSrc = "";
+        private static int _numberOfFiles = 0;
+        private static int _numberOfFilesProcessed = 0;
+
+        public static async Task Main(string[] args)
         {
             if (args.Length < 2)
             {
@@ -19,53 +23,66 @@ namespace SeekFilesCompare.multiThreads
 
             RootFileSrc = args[0];
             string dstDirectory = args[1];
-            bool goodEnding = true;
+            _numberOfFiles = GetFileCount(RootFileSrc);
 
             ExcelHelper.SetNameDirectory(RootFileSrc);
             TimerSeek.Start();
 
+            bool goodEnding;
             if (Directory.Exists(RootFileSrc) && Directory.Exists(dstDirectory))
             {
                 Console.WriteLine($"Source : {RootFileSrc}");
                 Console.WriteLine($"Destination : {dstDirectory}");
 
-                goodEnding = Seek(RootFileSrc, dstDirectory);
+                goodEnding = await Seek(RootFileSrc, dstDirectory);
                 _excelHelper.SaveExcel();
             }
             else
             {
                 Console.Error.WriteLine("The directory specified could not be found.");
+                return;
             }
 
             TimerSeek.Stop();
 
-            if (goodEnding)
-            {
-                Console.WriteLine("\n----------The program ended well----------");
-            }
-            else
-            {
-                Console.WriteLine("\n----------The program did not end well----------");
-            }
+            Console.WriteLine(goodEnding
+                ? $"\n---------- The program ended well {GetNumberFilesProcessedString()} ----------"
+                : $"\n---------- The program did not end well {GetNumberFilesProcessedString()} ----------");
 
             SendMail.SendAMail();
         }
 
-        private static bool Seek(string rootSrc, string rootDst)
+        private static async Task<bool> Seek(string rootSrc, string rootDst)
         {
             try
             {
-                foreach (var file in Directory.GetFiles(rootSrc))
+                var files = Directory.GetFiles(rootSrc);
+                var tasks = new List<Task>();
+
+                foreach (var file in files)
                 {
-                    var destinationFilePath = GetDestinationFilePath(RootFileSrc, rootDst, file);
-                    FileCompare(destinationFilePath, file);
+                    await _semaphore.WaitAsync();
+                    var task = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var destinationFilePath = GetDestinationFilePath(RootFileSrc, rootDst, file);
+                            await FileCompare(destinationFilePath, file);
+                        }
+                        finally
+                        {
+                            _semaphore.Release();
+                        }
+                    });
+                    tasks.Add(task);
                 }
 
-                string[] folders = Directory.GetDirectories(rootSrc);
-                Parallel.ForEach(folders, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads }, (folder) =>
-                {
-                    Seek(folder, rootDst);
-                });
+                await Task.WhenAll(tasks);
+
+                var folders = Directory.GetDirectories(rootSrc);
+                var folderTasks = folders.Select(folder => Seek(folder, rootDst)).ToList();
+
+                await Task.WhenAll(folderTasks);
 
                 return true;
             }
@@ -81,23 +98,25 @@ namespace SeekFilesCompare.multiThreads
             }
         }
 
-        public static void FileCompare(string destinationFilePath, string file)
+        public static async Task FileCompare(string destinationFilePath, string file)
         {
             try
             {
-                Console.WriteLine(file);
                 if (!File.Exists(destinationFilePath))
                 {
                     LogFileError(destinationFilePath, "File not found", excelHelper: _excelHelper);
                     return;
                 }
 
-                string hashSrc = HashFiles.HashFile(file);
-                string hashDest = HashFiles.HashFile(destinationFilePath);
-
                 string fileSizeSrc = new FileInfo(file).Length.ToString();
                 string fileSizeDst = new FileInfo(destinationFilePath).Length.ToString();
                 string formatByte = $"{fileSizeDst} bytes";
+
+                _numberOfFilesProcessed = Interlocked.Increment(ref _numberOfFilesProcessed);
+                Console.WriteLine($"{file} : ({GetNumberFilesProcessedString()} | size : {formatByte})");
+
+                string hashSrc = await HashFiles.HashFile(file);
+                string hashDest = await HashFiles.HashFile(destinationFilePath);
 
                 if (hashSrc != hashDest)
                 {
@@ -135,7 +154,7 @@ namespace SeekFilesCompare.multiThreads
         private static string GetDestinationFilePath(string rootSrc, string rootDst, string file)
         {
             string relativePathDest = Path.GetRelativePath(rootSrc, file);
-            return Path.Combine($@"\\{{Environment.MachineName}}",rootDst, relativePathDest);
+            return Path.Combine($@"\\{{Environment.MachineName}}", rootDst, relativePathDest);
         }
 
         private static void LogFileError(string destinationFilePath, string errorType, ExcelHelper excelHelper, string? hashFile = null, string? fileSize = null)
@@ -148,6 +167,16 @@ namespace SeekFilesCompare.multiThreads
             {
                 excelHelper.WriteContent([destinationFilePath, hashFile, fileSize, errorType,]);
             }
+        }
+
+        private static String GetNumberFilesProcessedString()
+        {
+            return $"{_numberOfFilesProcessed}/{_numberOfFiles}";
+        }
+
+        private static int GetFileCount(string directory)
+        {
+            return Directory.GetFiles(directory, "*", SearchOption.AllDirectories).Length;
         }
     }
 }
